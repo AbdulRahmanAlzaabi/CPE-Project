@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic; // Contains interfaces and classes that define generic collections
+using UnityEngine; // Contains Unity Engine interfaces
+using UnityEngine.SceneManagement; // Manages Unity Engine's scenes
+public class Levels : MonoBehaviour // Defining public class in Unity basis
+ 
+{
+      public void LEVEL1() // Defining LEVEL1 function
+        {
+        SceneManager.LoadScene(0); // Loading scene associated with value 0
+        }
+      public void LEVEL2()
+        {
+          SceneManager.LoadScene(1);
+        }
+      public void LEVEL3()
+        {
+          SceneManager.LoadScene(2);
+        }
+      public void QUIT ()
+        {
+          Debug.Log("QUIT");
+          Application.Quit(); // Unity command to quit the program
+        }
+}
