@@ -1,0 +1,130 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+
+public class MRI_Scene : MonoBehaviour
+{
+    [SerializeField] public GameObject MainCam;
+    [SerializeField] public GameObject SecondCam;
+    [SerializeField] public CanvasGroup canvasgrp;
+    public Transform Player;
+    private float timeremaining = 10;
+    public bool RunningTimer;   
+    private AudioSource MRI_AUDIO;
+    private bool Scan;
+    private Tween fadetween;
+    public Text DisplayTextTime;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        DOTween.Init();
+        RunningTimer = false;
+        Scan = false;
+        MainCam.SetActive(true);
+        SecondCam.SetActive(false);
+        MRI_AUDIO = GetComponent<AudioSource>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (RunningTimer)
+        {
+            if (timeremaining > 0)
+            {
+                timeremaining -= Time.deltaTime;
+                DisplayTime(timeremaining);
+            }
+            else
+            {
+                Destroy(DisplayTextTime);
+                Debug.Log("Level Completed!");
+                timeremaining = 0;
+                FadeOffScan(2f);
+                RunningTimer = false;
+                //Exit Scene
+            }
+        }
+
+        if (Player)
+        {
+            float interact = Vector3.Distance(Player.position, transform.position);
+            if (interact < 5)
+            {
+                if (Input.GetMouseButton(0) && Scan == false)
+                {
+                    FadeOnScan(2f);
+
+
+                }
+            }
+        }
+        void Scanning()
+        {
+            RunningTimer = true;
+            Scan = true;
+            MainCam.SetActive(false);
+            SecondCam.SetActive(true);
+            MRI_AUDIO.Play();
+        }
+        void StopScanning()
+        {
+            Scan = false;
+            MainCam.SetActive(true);
+            SecondCam.SetActive(false);
+            MRI_AUDIO.Stop();
+        }
+
+        void Fade(float end, float dur, TweenCallback onEnd)
+        {
+            if (fadetween != null)
+            {
+                fadetween.Kill(false);
+            }
+            fadetween = canvasgrp.DOFade(end, dur);
+            fadetween.onComplete += onEnd;
+        }
+        void FadeOnScan(float duration)
+        {
+            Fade(1f, duration, () =>
+            {
+                canvasgrp.interactable = true;
+                canvasgrp.blocksRaycasts = true;
+                Scanning();
+                FadeOff(2f);
+            });
+        }
+
+        void FadeOffScan(float duration)
+        {
+            Fade(1f, duration, () =>
+            {
+                canvasgrp.interactable = true;
+                canvasgrp.blocksRaycasts = true;
+                StopScanning();
+                FadeOff(2f);
+            });
+        }
+
+        void FadeOff(float duration)
+        {
+            Fade(0f, duration, () =>
+            {
+                canvasgrp.interactable = false;
+                canvasgrp.blocksRaycasts = false;
+
+            });
+        }
+        void DisplayTime(float DisplayingT)
+        {
+            DisplayingT += 1;
+
+            float minutes = Mathf.FloorToInt(DisplayingT / 60);
+            float seconds = Mathf.FloorToInt(DisplayingT % 60);
+            DisplayTextTime.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
+    }
+}
