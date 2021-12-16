@@ -1,0 +1,36 @@
+using UnityEngine.UI;
+
+
+public float timeremaining = 90;
+public bool RunningTimer;
+public Text DisplayTextTime;
+
+void Start(){
+ RunningTimer = false;
+}
+
+void Update()
+    {
+        if (RunningTimer)
+        {
+            if (timeremaining > 0)
+            {
+                timeremaining -= Time.deltaTime;
+                DisplayTime(timeremaining);
+            }
+            else
+            {
+                Destroy(DisplayTextTime);
+                Debug.Log("Level Completed!");
+                timeremaining = 0;
+              //Your stopping function            }
+        }
+
+void DisplayTime(float DisplayingT)
+    {
+        float minutes = Mathf.FloorToInt(DisplayingT / 60);
+        float seconds = Mathf.FloorToInt(DisplayingT % 60);
+        DisplayTextTime.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+
